@@ -1,5 +1,19 @@
+function findPropertyName(obj, equals) {
+    for (var a in obj)
+        if (obj.hasOwnProperty(a) && obj[a] === equals)
+            return a;
+}
+var kobindingHandlersName = findPropertyName(ko, ko.bindingHandlers),
+    savedHandlers;
+function resetBindingHandlers() {
+    if (savedHandlers)
+        ko.bindingHandlers = ko[kobindingHandlersName] = savedHandlers;
+    savedHandlers = ko.utils.extend({}, ko.bindingHandlers);
+}
+
 describe('key.subkey bindings', {
     before_each: function () {
+        resetBindingHandlers();
         var existingNode = document.getElementById("testNode");
         if (existingNode != null)
             existingNode.parentNode.removeChild(existingNode);
@@ -19,10 +33,6 @@ describe('key.subkey bindings', {
     },
 
     'Should be able to use x.y binding syntax to call \'x\' handler with \'y\' as object key': function() {
-        // ensure that a.b and a.c don't exist
-        delete ko.bindingHandlers['a.b'];
-        delete ko.bindingHandlers['a.c'];
-
         var observable = ko.observable(), lastSubKey;
         ko.bindingHandlers['a'] = {
             update: function(element, valueAccessor) {
@@ -42,10 +52,6 @@ describe('key.subkey bindings', {
     },
 
     'Should be able to define a custom handler for x.y binding syntax': function() {
-        // ensure that a.b and a.c don't exist
-        delete ko.bindingHandlers['a.b'];
-        delete ko.bindingHandlers['a.c'];
-
         var observable = ko.observable(), lastSubKey;
         ko.bindingHandlers['a'] = {
             makeSubkeyHandler: function(baseKey, subKey) {
@@ -67,7 +73,6 @@ describe('key.subkey bindings', {
     },
 
     'Should be able to use x.y binding syntax in virtual elements if \'x\' binding supports it': function() {
-        delete ko.bindingHandlers['a.b'];   // ensure that a.b doesn't exist
         var lastSubKey;
         ko.bindingHandlers['a'] = {
             update: function(element, valueAccessor) {
@@ -80,6 +85,23 @@ describe('key.subkey bindings', {
         ko.virtualElements.allowedBindings.a = true;
 
         testNode.innerHTML = "x <!-- ko a.b: true --><!--/ko-->";
+        ko.applyBindings(null, testNode);
+        value_of(lastSubKey).should_be("b");
+    },
+
+    'Should be able use x.y through ko.applyBindingsToNode': function() {
+        var lastSubKey;
+        ko.bindingHandlers['a'] = {
+            update: function(element, valueAccessor) {
+                var value = valueAccessor();
+                for (var key in value)
+                    if (ko.utils.unwrapObservable(value[key]))
+                        lastSubKey = key;
+            }
+        };
+
+        testNode.innerHTML = "<div></div>";
+        ko.applyBindingsToNode(testNode.childNodes[0], {'a.b': true}, null);
         ko.applyBindings(null, testNode);
         value_of(lastSubKey).should_be("b");
     },

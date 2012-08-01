@@ -4,6 +4,12 @@
 
 (function(ko, undefined) {
 
+function findPropertyName(obj, equals) {
+    for (var a in obj)
+        if (obj.hasOwnProperty(a) && obj[a] === equals)
+            return a;
+}
+
 // Support a short-hand syntax of "key.subkey: value". The "key.subkey" binding
 // handler will be created as needed (through ko.getBindingHandler) but can also be
 // created initially (as event.click is).
@@ -43,16 +49,8 @@ function makeDefaultKeySubkeyHandler(baseKey, subKey) {
     return subHandler;
 }
 
-
-function keySubkeyBindingProvider() { }
-keySubkeyBindingProvider.prototype = ko.bindingProvider.instance;
-keySubkeyBindingProvider.prototype.constructor = keySubkeyBindingProvider;
-
-keySubkeyBindingProvider.prototype.getBindings = function(node, bindingContext) {
-    var bindingsString = this.getBindingsString(node, bindingContext),
-        parsedBindings = bindingsString ? this.parseBindingsString(bindingsString, bindingContext) : null;
-
-    // Find any bindings of the form x.y, and for each one, ensure we have a parameterized binding handler to match
+// Find any bindings of the form x.y, and for each one, ensure we have a parameterized binding handler to match
+function makeKeySubkeyBindings(parsedBindings) {
     if (parsedBindings) {
         for (var key in parsedBindings) {
             if (parsedBindings.hasOwnProperty(key) && !ko.bindingHandlers[key]) {
@@ -61,9 +59,25 @@ keySubkeyBindingProvider.prototype.getBindings = function(node, bindingContext) 
         }
     }
     return parsedBindings;
+}
+
+
+/**
+ * Process any bindings accessed through ko.bindingProvider by wrapping the getBindings function
+ */
+var oldGetBindings = ko.bindingProvider.instance.getBindings;
+ko.bindingProvider.instance.getBindings = function(node, bindingContext) {
+    return makeKeySubkeyBindings(oldGetBindings.call(this, node, bindingContext));
 };
 
-// ----- Now use the custom provider -----
-ko.bindingProvider.instance = new keySubkeyBindingProvider();
+/**
+ * Process any bindings accessed through string-based templates by wrapping the applyBindingsToNode function
+ */
+var oldApplyToNode = ko.applyBindingsToNode,
+    koApplyToNodeName = findPropertyName(ko, oldApplyToNode);
+ko.applyBindingsToNode = ko[koApplyToNodeName] = function(node, bindings, viewModel) {
+    oldApplyToNode(node, makeKeySubkeyBindings(bindings), viewModel);
+}
+
 
 })(ko);
