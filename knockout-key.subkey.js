@@ -1,4 +1,4 @@
-// KEY.SUBKEY binding provider for Knockout http://knockoutjs.com/
+// KEY.SUBKEY binding plugin for Knockout http://knockoutjs.com/
 // (c) Michael Best
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -11,8 +11,8 @@ function findPropertyName(obj, equals) {
 }
 
 // Support a short-hand syntax of "key.subkey: value". The "key.subkey" binding
-// handler will be created as needed (through ko.getBindingHandler) but can also be
-// created initially (as event.click is).
+// handler will be created as needed but can also be created manually using
+// ko.getBindingHandler.
 var keySubkeyMatch = /([^\.]+)\.(.+)/, keySubkeyBindingDivider = '.';
 function makeKeySubkeyBinding(bindingKey) {
     var match = bindingKey.match(keySubkeyMatch);
@@ -32,9 +32,9 @@ function makeKeySubkeyBinding(bindingKey) {
 // Create a binding handler that translates a binding of "binding: value" to
 // "basekey: {subkey: value}". Compatible with these default bindings: event, attr, css, style.
 function makeDefaultKeySubkeyHandler(baseKey, subKey) {
-    var subHandler = {};
+    var subHandler = ko.utils.extend({}, this);
     function setHandlerFunction(funcName) {
-        if (ko.bindingHandlers[baseKey][funcName]) {
+        if (subHandler[funcName]) {
             subHandler[funcName] = function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 function subValueAccessor() {
                     var result = {};
@@ -45,7 +45,8 @@ function makeDefaultKeySubkeyHandler(baseKey, subKey) {
             };
         }
     }
-    ko.utils.arrayForEach(['init', 'update'], setHandlerFunction);
+    setHandlerFunction('init');
+    setHandlerFunction('update');
     return subHandler;
 }
 
@@ -62,22 +63,22 @@ function makeKeySubkeyBindings(parsedBindings) {
 }
 
 
-/**
- * Process any bindings accessed through ko.bindingProvider by wrapping the getBindings function
- */
+// Process any bindings accessed through ko.bindingProvider by wrapping the getBindings function
 var oldGetBindings = ko.bindingProvider.instance.getBindings;
 ko.bindingProvider.instance.getBindings = function(node, bindingContext) {
     return makeKeySubkeyBindings(oldGetBindings.call(this, node, bindingContext));
 };
 
-/**
- * Process any bindings accessed through string-based templates by wrapping the applyBindingsToNode function
- */
+// Process any bindings accessed through string-based templates by wrapping the applyBindingsToNode function
 var oldApplyToNode = ko.applyBindingsToNode,
     koApplyToNodeName = findPropertyName(ko, oldApplyToNode);
 ko.applyBindingsToNode = ko[koApplyToNodeName] = function(node, bindings, viewModel) {
     oldApplyToNode(node, makeKeySubkeyBindings(bindings), viewModel);
-}
+};
 
+// You can use ko.getBindingHandler to manually create key.subkey bindings
+ko.getBindingHandler = function(bindingKey) {
+    return ko.bindingHandlers[bindingKey] || makeKeySubkeyBinding(bindingKey);
+};
 
 })(ko);
