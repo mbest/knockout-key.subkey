@@ -24,7 +24,10 @@ function makeKeySubkeyBinding(bindingKey) {
                 makeSubHandler = baseHandler.makeSubkeyHandler || makeDefaultKeySubkeyHandler,
                 subHandler = makeSubHandler.call(baseHandler, baseKey, subKey, bindingKey);
             ko.virtualElements.allowedBindings[bindingKey] = ko.virtualElements.allowedBindings[baseKey];
-            return (ko.bindingHandlers[bindingKey] = subHandler);
+            ko.bindingHandlers[bindingKey] = subHandler;
+            if (ko.bindingFreedom)
+                ko.bindingFreedom.include(bindingKey);
+            return subHandler;
         }
     }
 }

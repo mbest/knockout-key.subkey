@@ -106,6 +106,32 @@ describe('key.subkey bindings', {
         value_of(lastSubKey).should_be("b");
     },
 
+    'Should not run updates for all x.y bindings if only one needs to run if knockout-freedom is included': function() {
+        if (ko.bindingFreedom) {
+            var observable = ko.observable('A'), updateCounts = [0,0,0];
+            ko.bindingHandlers.test = {
+                makeSubkeyHandler: function(baseKey, subKey) {
+                    return {
+                        update: function(element, valueAccessor) {
+                            ko.utils.unwrapObservable(valueAccessor());  // access value to create a subscription
+                            updateCounts[subKey]++;
+                        }
+                    };
+                }
+            };
+            testNode.innerHTML = "<div data-bind='test.1: myObservable, test.2: true'></div>";
+
+            ko.applyBindings({ myObservable: observable }, testNode);
+            value_of(updateCounts[1]).should_be(1);
+            value_of(updateCounts[2]).should_be(1);
+
+            // update the observable and check that only the first binding was updated
+            observable('B');
+            value_of(updateCounts[1]).should_be(2);
+            value_of(updateCounts[2]).should_be(1);
+        }
+    },
+
     'Should be able to supply event type as event.type': function() {
         var model = { clickCalled: false };
         testNode.innerHTML = "<button data-bind='event.click: function() { clickCalled = true; }'>hey</button>";
