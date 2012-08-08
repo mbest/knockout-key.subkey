@@ -39,14 +39,15 @@ function makeDefaultKeySubkeyHandler(baseKey, subKey) {
     var subHandler = ko.utils.extend({}, this);
     function setHandlerFunction(funcName) {
         if (subHandler[funcName]) {
-            subHandler[funcName] = function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            subHandler[funcName] = function(element, valueAccessor) {
                 function subValueAccessor() {
                     var result = {};
                     result[subKey] = valueAccessor();
                     return result;
                 }
-                var func = ko.bindingHandlers[baseKey][funcName];
-                return func(element, subValueAccessor, allBindingsAccessor, viewModel, bindingContext);
+                var args = Array.prototype.slice.call(arguments, 0);
+                args[1] = subValueAccessor;
+                return ko.bindingHandlers[baseKey][funcName].apply(this, args);
             };
         }
     }
