@@ -110,13 +110,11 @@ describe('key.subkey bindings', {
         if (ko.bindingFreedom) {
             var observable = ko.observable('A'), updateCounts = [0,0,0];
             ko.bindingHandlers.test = {
-                makeSubkeyHandler: function(baseKey, subKey) {
-                    return {
-                        update: function(element, valueAccessor) {
-                            ko.utils.unwrapObservable(valueAccessor());  // access value to create a subscription
-                            updateCounts[subKey]++;
-                        }
-                    };
+                update: function(element, valueAccessor) {
+                    var value = valueAccessor();
+                    for (var key in value)
+                        if (ko.utils.unwrapObservable(value[key]))
+                            updateCounts[key]++;
                 }
             };
             testNode.innerHTML = "<div data-bind='test.1: myObservable, test.2: true'></div>";

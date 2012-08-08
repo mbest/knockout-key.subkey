@@ -1,6 +1,7 @@
-// KEY.SUBKEY binding plugin for Knockout http://knockoutjs.com/
+// KEY.SUBKEY BINDING plugin for Knockout http://knockoutjs.com/
 // (c) Michael Best
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
+// Version 0.1.0
 
 (function(ko, undefined) {
 
@@ -44,7 +45,8 @@ function makeDefaultKeySubkeyHandler(baseKey, subKey) {
                     result[subKey] = valueAccessor();
                     return result;
                 }
-                return ko.bindingHandlers[baseKey][funcName](element, subValueAccessor, allBindingsAccessor, viewModel, bindingContext);
+                var func = ko.bindingHandlers[baseKey][funcName];
+                return func(element, subValueAccessor, allBindingsAccessor, viewModel, bindingContext);
             };
         }
     }
@@ -82,6 +84,11 @@ ko.applyBindingsToNode = ko[koApplyToNodeName] = function(node, bindings, viewMo
 // You can use ko.getBindingHandler to manually create key.subkey bindings
 ko.getBindingHandler = function(bindingKey) {
     return ko.bindingHandlers[bindingKey] || makeKeySubkeyBinding(bindingKey);
+};
+
+// Export plugin function to manually set up bindings
+ko.keySubkeyBinding = {
+    makeBinding: makeKeySubkeyBinding
 };
 
 })(ko);
