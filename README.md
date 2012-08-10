@@ -38,7 +38,7 @@ When combined with [Knockout-Freedom](https://github.com/mbest/knockout-freedom)
 
 To use this plugin, simply include `knockout-key.subkey.js` in your page after you’ve included Knockout. You can then start using the new syntax in your data bindings. If you have existing code that uses the original syntax, you do *not* have to change it, since this plugin doesn’t disable the old syntax.
 
-Each time you use a new "key.subkey" binding in your view, this plugin dynamically creates a binding handler for it. It does this by wrapping two Knockout functions, `ko.bindingProvider.instance.getBindings` (used for most bindings) and `ko.applyBindingsToNode` (used for bindings within string-based templates such as jQuery-tmpl).
+Each time you use a new *key.subkey* binding in your view, this plugin dynamically creates a binding handler for it. It does this by wrapping two Knockout functions, `ko.bindingProvider.instance.getBindings` (used for most bindings) and `ko.applyBindingsToNode` (used for bindings within string-based templates such as jQuery-tmpl).
 
 #### Using this syntax for custom bindings
 
@@ -79,11 +79,11 @@ Alternatively, if your custom binding is only meant to work with the new syntax,
 	
 #### Interfaces
 
-This plugin exports `ko.keySubkeyBinding.makeBinding`, which can be used to manually generate a *key.subkey* binding handler. It both saves the handler in `ko.bindingHandlers` as *key.subkey* and returns the handler object. If the specified binding handler was already created before, `makeBinding` will create a new one, overwriting the old one. You can use this, for example, to create an alias for a binding:
+This plugin exports `ko.keySubkeyBinding.makeHandler`, which can be used to manually generate a *key.subkey* binding handler. It both saves the handler in `ko.bindingHandlers` as *key.subkey* and returns the handler object. If the specified binding handler was already created before, `makeHandler` will create a new one, overwriting the old one. You can use this, for example, to create an alias for a binding:
 
-    ko.bindingHandlers.valueOneWay = ko.keySubkeyBinding.makeBinding('attr.value');
+    ko.bindingHandlers.valueOneWay = ko.keySubkeyBinding.makeHandler('attr.value');
 
-This plugin also exports `ko.getBindingHandler` with similar functionality to `makeBinding`. But `getBindingHandler` will simply return, rather than re-create, an existing binding handler.
+This plugin also exports `ko.getBindingHandler` with similar functionality to `makeHandler`. But `getBindingHandler` will simply return, rather than re-create, an existing binding handler.
 
 As described in the section about custom bindings, when trying to dynamically create an `x.y` (for example) binding handler, this plugin will call `ko.bindingHandlers.x.makeSubkeyHandler('x', 'y', 'x.y')` if the function exists, which should return a binding handler object for that sub-key (with `init` and/or `update` functions).
 

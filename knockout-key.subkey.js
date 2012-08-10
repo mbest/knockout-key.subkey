@@ -15,7 +15,7 @@ function findPropertyName(obj, equals) {
 // handler will be created as needed but can also be created manually using
 // ko.getBindingHandler.
 var keySubkeyMatch = /([^\.]+)\.(.+)/, keySubkeyBindingDivider = '.';
-function makeKeySubkeyBinding(bindingKey) {
+function makeKeySubkeyBindingHandler(bindingKey) {
     var match = bindingKey.match(keySubkeyMatch);
     if (match) {
         var baseKey = match[1],
@@ -57,11 +57,11 @@ function makeDefaultKeySubkeyHandler(baseKey, subKey) {
 }
 
 // Find any bindings of the form x.y, and for each one, ensure we have a parameterized binding handler to match
-function makeKeySubkeyBindings(parsedBindings) {
+function makeKeySubkeyBindingHandlers(parsedBindings) {
     if (parsedBindings) {
         for (var key in parsedBindings) {
             if (parsedBindings.hasOwnProperty(key) && !ko.bindingHandlers[key]) {
-                makeKeySubkeyBinding(key);
+                makeKeySubkeyBindingHandler(key);
             }
         }
     }
@@ -72,24 +72,24 @@ function makeKeySubkeyBindings(parsedBindings) {
 // Process any bindings accessed through ko.bindingProvider by wrapping the getBindings function
 var oldGetBindings = ko.bindingProvider.instance.getBindings;
 ko.bindingProvider.instance.getBindings = function(node, bindingContext) {
-    return makeKeySubkeyBindings(oldGetBindings.call(this, node, bindingContext));
+    return makeKeySubkeyBindingHandlers(oldGetBindings.call(this, node, bindingContext));
 };
 
 // Process any bindings accessed through string-based templates by wrapping the applyBindingsToNode function
 var oldApplyToNode = ko.applyBindingsToNode,
     koApplyToNodeName = findPropertyName(ko, oldApplyToNode);
 ko.applyBindingsToNode = ko[koApplyToNodeName] = function(node, bindings, viewModel) {
-    oldApplyToNode(node, makeKeySubkeyBindings(bindings), viewModel);
+    oldApplyToNode(node, makeKeySubkeyBindingHandlers(bindings), viewModel);
 };
 
 // You can use ko.getBindingHandler to manually create key.subkey bindings
 ko.getBindingHandler = function(bindingKey) {
-    return ko.bindingHandlers[bindingKey] || makeKeySubkeyBinding(bindingKey);
+    return ko.bindingHandlers[bindingKey] || makeKeySubkeyBindingHandler(bindingKey);
 };
 
 // Export plugin function to manually set up bindings
 ko.keySubkeyBinding = {
-    makeBinding: makeKeySubkeyBinding
+    makeHandler: makeKeySubkeyBindingHandler
 };
 
 })(ko);
