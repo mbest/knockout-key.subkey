@@ -1,6 +1,6 @@
 ### **Key.Subkey Binding** plugin for [Knockout](http://knockoutjs.com/)
 
-This plugin enables you to use a new syntax for Knockout’s built-in bindings `attr`, `css`, `sytle`, and `event`. This new syntax combines the name of the binding and the item you want to bind without having to use a sub-object.
+This plugin enables you to use a new syntax for Knockoutâ€™s built-in bindings `attr`, `css`, `sytle`, and `event`. This new syntax combines the name of the binding and the item you want to bind without having to use a sub-object.
 
 #### Syntax examples
 
@@ -36,13 +36,13 @@ When combined with [Knockout-Freedom](https://github.com/mbest/knockout-freedom)
     
 #### How this plugin works
 
-To use this plugin, simply include `knockout-key.subkey.js` in your page after you’ve included Knockout. You can then start using the new syntax in your data bindings. If you have existing code that uses the original syntax, you do *not* have to change it, since this plugin doesn’t disable the old syntax.
+To use this plugin, simply include `knockout-key.subkey.js` in your page after youâ€™ve included Knockout. You can then start using the new syntax in your data bindings. If you have existing code that uses the original syntax, you do *not* have to change it, since this plugin doesnâ€™t disable the old syntax.
 
 Each time you use a new *key.subkey* binding in your view, this plugin dynamically creates a binding handler for it. It does this by wrapping two Knockout functions, `ko.bindingProvider.instance.getBindings` (used for most bindings) and `ko.applyBindingsToNode` (used for bindings within string-based templates such as jQuery-tmpl).
 
 #### Using this syntax for custom bindings
 
-If your binding follows the same pattern as the supported built-in bindings, it will work automatically with the new syntax. Here’s an example custom binding handler:
+If your binding follows the same pattern as the supported built-in bindings, it will work automatically with the new syntax. Hereâ€™s an example custom binding handler:
 
     ko.bindingHandlers.dataAttr = {
         update: function(element, valueAccessor) {
