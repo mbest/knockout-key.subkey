@@ -83,8 +83,9 @@ ko.applyBindingsToNode = ko[koApplyToNodeName] = function(node, bindings, viewMo
 };
 
 // You can use ko.getBindingHandler to manually create key.subkey bindings
+var oldGetHandler = ko.getBindingHandler || function(bindingKey) { return ko.bindingHandlers[bindingKey] };
 ko.getBindingHandler = function(bindingKey) {
-    return ko.bindingHandlers[bindingKey] || makeKeySubkeyBindingHandler(bindingKey);
+    return oldGetHandler(bindingKey) || makeKeySubkeyBindingHandler(bindingKey);
 };
 
 // Export plugin function to manually set up bindings
