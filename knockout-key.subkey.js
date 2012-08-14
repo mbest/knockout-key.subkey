@@ -26,7 +26,7 @@ function makeKeySubkeyBindingHandler(bindingKey) {
                 subHandler = makeSubHandler.call(baseHandler, baseKey, subKey, bindingKey);
             ko.virtualElements.allowedBindings[bindingKey] = ko.virtualElements.allowedBindings[baseKey];
             ko.bindingHandlers[bindingKey] = subHandler;
-            if (ko.bindingFreedom)
+            if (ko.bindingFreedom && !ko.bindingFreedom.isExcluded(baseKey))
                 ko.bindingFreedom.include(bindingKey);
             return subHandler;
         }
