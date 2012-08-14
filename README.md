@@ -81,7 +81,7 @@ Alternatively, if your custom binding is only meant to work with the new syntax,
 
 This plugin exports `ko.keySubkeyBinding.makeHandler`, which can be used to manually generate a *key.subkey* binding handler. It both saves the handler in `ko.bindingHandlers` as *key.subkey* and returns the handler object. If the specified binding handler was already created before, `makeHandler` will create a new one, overwriting the old one. You can use this, for example, to create an alias for a binding:
 
-    ko.bindingHandlers.valueOneWay = ko.keySubkeyBinding.makeHandler('attr.value');
+    ko.bindingHandlers.id = ko.keySubkeyBinding.makeHandler('attr.id');
 
 This plugin also exports `ko.getBindingHandler` with similar functionality to `makeHandler`. But `getBindingHandler` will simply return, rather than re-create, an existing binding handler.
 
