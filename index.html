@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Knockout-key.subkey by mbest</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Knockout-key.subkey</h1>
+        <p class="header">Add support to Knockout for key.subkey bindings for attr, css, style, event, and more.</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/mbest/knockout-key.subkey/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/mbest/knockout-key.subkey/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/mbest/knockout-key.subkey">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/mbest">mbest</a></p>
+
+
+      </header>
+      <section>
+        <h3>
+<a name="keysubkey-binding-plugin-for-knockout" class="anchor" href="#keysubkey-binding-plugin-for-knockout"><span class="octicon octicon-link"></span></a><strong>Key.Subkey Binding</strong> plugin for <a href="http://knockoutjs.com/">Knockout</a>
+</h3>
+
+<p>This plugin enables you to use a new syntax for Knockout’s built-in bindings <code>attr</code>, <code>css</code>, <code>sytle</code>, and <code>event</code>. This new syntax combines the name of the binding and the item you want to bind without having to use a sub-object.</p>
+
+<h4>
+<a name="syntax-examples" class="anchor" href="#syntax-examples"><span class="octicon octicon-link"></span></a>Syntax examples</h4>
+
+<div class="highlight"><pre><span class="nx">attr</span><span class="p">.</span><span class="nx">href</span><span class="o">:</span> <span class="nx">url</span><span class="p">,</span> <span class="nx">attr</span><span class="p">.</span><span class="nx">title</span><span class="o">:</span> <span class="nx">details</span>
+<span class="nx">attr</span><span class="p">.</span><span class="nx">data</span><span class="o">-</span><span class="nx">something</span><span class="o">:</span> <span class="nx">someValue</span>
+
+<span class="nx">css</span><span class="p">.</span><span class="nx">profitWarning</span><span class="o">:</span> <span class="nx">currentProfit</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">css</span><span class="p">.</span><span class="nx">majorHighlight</span><span class="o">:</span> <span class="nx">isSevere</span>
+<span class="nx">css</span><span class="p">.</span><span class="nx">my</span><span class="o">-</span><span class="kr">class</span><span class="o">:</span> <span class="nx">someValue</span>
+
+<span class="nx">style</span><span class="p">.</span><span class="nx">color</span><span class="o">:</span> <span class="nx">currentProfit</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">?</span> <span class="s1">'red'</span> <span class="o">:</span> <span class="s1">'black'</span>
+
+<span class="nx">event</span><span class="p">.</span><span class="nx">mouseover</span><span class="o">:</span> <span class="nx">enableDetails</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">mouseout</span><span class="o">:</span> <span class="nx">disableDetails</span>
+</pre></div>
+
+<h4>
+<a name="advantages-over-the-built-in-syntax" class="anchor" href="#advantages-over-the-built-in-syntax"><span class="octicon octicon-link"></span></a>Advantages over the built-in syntax</h4>
+
+<p>This syntax is more concise because it eliminates the need for extra curly braces and quotes. For example, compare the following:</p>
+
+<div class="highlight"><pre><span class="nx">attr</span><span class="o">:</span> <span class="p">{</span> <span class="s1">'data-something'</span><span class="o">:</span> <span class="nx">someValue</span> <span class="p">}</span>
+
+<span class="nx">attr</span><span class="p">.</span><span class="nx">data</span><span class="o">-</span><span class="nx">something</span><span class="o">:</span> <span class="nx">someValue</span>
+</pre></div>
+
+<p>This syntax more clearly expresses that multiple bindings of the same type are separate. For example, compare:</p>
+
+<div class="highlight"><pre><span class="nx">attr</span><span class="o">:</span> <span class="p">{</span> <span class="nx">href</span><span class="o">:</span> <span class="nx">url</span><span class="p">,</span> <span class="nx">title</span><span class="o">:</span> <span class="nx">details</span> <span class="p">}</span>
+
+<span class="nx">attr</span><span class="p">.</span><span class="nx">href</span><span class="o">:</span> <span class="nx">url</span><span class="p">,</span> <span class="nx">attr</span><span class="p">.</span><span class="nx">title</span><span class="o">:</span> <span class="nx">details</span>
+</pre></div>
+
+<p>When combined with <a href="https://github.com/mbest/knockout-freedom">Knockout-Freedom</a>, this syntax ensures that each of multiple attributes (etc.) is only updated when its own dependencies change. This is especially important when an update has side effects or involves some significant amount of work. For example, in the first case below, an update to <code>myId</code> will update both bindings and cause the <code>iframe</code> to reload (in some browsers); but in the second case, only an update to <code>baseUrl</code> will cause it to reload:</p>
+
+<div class="highlight"><pre><span class="nt">&lt;iframe</span> <span class="na">data-bind=</span><span class="s">"attr: { src: baseUrl, id: myId }"</span><span class="nt">&gt;&lt;/iframe&gt;</span>
+
+<span class="nt">&lt;iframe</span> <span class="na">data-bind=</span><span class="s">"attr.src: baseUrl, attr.id: myId"</span><span class="nt">&gt;&lt;/iframe&gt;</span>
+</pre></div>
+
+<h4>
+<a name="how-this-plugin-works" class="anchor" href="#how-this-plugin-works"><span class="octicon octicon-link"></span></a>How this plugin works</h4>
+
+<p>To use this plugin, simply include <code>knockout-key.subkey.js</code> in your page after you’ve included Knockout. You can then start using the new syntax in your data bindings. If you have existing code that uses the original syntax, you do <em>not</em> have to change it, since this plugin doesn’t disable the old syntax.</p>
+
+<p>Each time you use a new <em>key.subkey</em> binding in your view, this plugin dynamically creates a binding handler for it. It does this by wrapping two Knockout functions, <code>ko.bindingProvider.instance.getBindings</code> (used for most bindings) and <code>ko.applyBindingsToNode</code> (used for bindings within string-based templates such as jQuery-tmpl).</p>
+
+<h4>
+<a name="using-this-syntax-for-custom-bindings" class="anchor" href="#using-this-syntax-for-custom-bindings"><span class="octicon octicon-link"></span></a>Using this syntax for custom bindings</h4>
+
+<p>If your binding follows the same pattern as the supported built-in bindings, it will work automatically with the new syntax. Here’s an example custom binding handler:</p>
+
+<div class="highlight"><pre><span class="nx">ko</span><span class="p">.</span><span class="nx">bindingHandlers</span><span class="p">.</span><span class="nx">dataAttr</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">update</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">valueAccessor</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">ko</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">unwrapObservable</span><span class="p">(</span><span class="nx">valueAccessor</span><span class="p">())</span> <span class="o">||</span> <span class="p">{};</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">subKey</span> <span class="k">in</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">dataValue</span> <span class="o">=</span> <span class="nx">ko</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">unwrapObservable</span><span class="p">(</span><span class="nx">value</span><span class="p">[</span><span class="nx">subKey</span><span class="p">]);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">dataValue</span> <span class="o">&amp;&amp;</span> <span class="nx">dataValue</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="nx">element</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="s2">"data-"</span> <span class="o">+</span> <span class="nx">subKey</span><span class="p">);</span>
+            <span class="k">else</span>
+                <span class="nx">element</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">"data-"</span> <span class="o">+</span> <span class="nx">subKey</span><span class="p">,</span> <span class="nx">dataValue</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+
+<p>The binding could then be used like this:</p>
+
+<div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">data-bind=</span><span class="s">"dataAttr.one: 'one', dataAttr.two: 'two'"</span><span class="nt">&gt;&lt;/div&gt;</span>
+</pre></div>
+
+<p>Alternatively, if your custom binding is only meant to work with the new syntax, you can use the new <code>makeSubkeyHandler</code> function to define how to handle the binding:</p>
+
+<div class="highlight"><pre><span class="nx">ko</span><span class="p">.</span><span class="nx">bindingHandlers</span><span class="p">.</span><span class="nx">dataAttr</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">makeSubkeyHandler</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">baseKey</span><span class="p">,</span> <span class="nx">subKey</span><span class="p">,</span> <span class="nx">combinedKey</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="nx">update</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">valueAccessor</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">dataValue</span> <span class="o">=</span> <span class="nx">ko</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">unwrapObservable</span><span class="p">(</span><span class="nx">valueAccessor</span><span class="p">());</span>
+                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">dataValue</span> <span class="o">&amp;&amp;</span> <span class="nx">dataValue</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="nx">element</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="s2">"data-"</span> <span class="o">+</span> <span class="nx">subKey</span><span class="p">);</span>
+                <span class="k">else</span>
+                    <span class="nx">element</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">"data-"</span> <span class="o">+</span> <span class="nx">subKey</span><span class="p">,</span> <span class="nx">dataValue</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+
+<h4>
+<a name="interfaces" class="anchor" href="#interfaces"><span class="octicon octicon-link"></span></a>Interfaces</h4>
+
+<p>This plugin exports <code>ko.keySubkeyBinding.makeHandler</code>, which can be used to manually generate a <em>key.subkey</em> binding handler. It both saves the handler in <code>ko.bindingHandlers</code> as <em>key.subkey</em> and returns the handler object. If the specified binding handler was already created before, <code>makeHandler</code> will create a new one, overwriting the old one. You can use this, for example, to create an alias for a binding:</p>
+
+<div class="highlight"><pre><span class="nx">ko</span><span class="p">.</span><span class="nx">bindingHandlers</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">ko</span><span class="p">.</span><span class="nx">keySubkeyBinding</span><span class="p">.</span><span class="nx">makeHandler</span><span class="p">(</span><span class="s1">'attr.id'</span><span class="p">);</span>
+</pre></div>
+
+<p>This plugin also exports <code>ko.getBindingHandler</code> with similar functionality to <code>makeHandler</code>. But <code>getBindingHandler</code> will simply return, rather than re-create, an existing binding handler.</p>
+
+<p>As described in the section about custom bindings, when trying to dynamically create an <code>x.y</code> (for example) binding handler, this plugin will call <code>ko.bindingHandlers.x.makeSubkeyHandler('x', 'y', 'x.y')</code> if the function exists, which should return a binding handler object for that sub-key (with <code>init</code> and/or <code>update</code> functions).</p>
+
+<h4>
+<a name="license-and-contact" class="anchor" href="#license-and-contact"><span class="octicon octicon-link"></span></a>License and Contact</h4>
+
+<p><strong>License:</strong> MIT (<a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php</a>)</p>
+
+<p>Michael Best<br><a href="https://github.com/mbest">https://github.com/mbest</a><br><a href="mailto:mbest@dasya.com">mbest@dasya.com</a></p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
