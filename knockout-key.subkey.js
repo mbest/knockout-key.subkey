@@ -69,19 +69,20 @@ function makeKeySubkeyBindingHandlers(parsedBindings) {
     return parsedBindings;
 }
 
+if (ko.version[0] < 3) {
+    // Process any bindings accessed through ko.bindingProvider by wrapping the getBindings function
+    var oldGetBindings = ko.bindingProvider.instance.getBindings;
+    ko.bindingProvider.instance.getBindings = function(node, bindingContext) {
+        return makeKeySubkeyBindingHandlers(oldGetBindings.call(this, node, bindingContext));
+    };
 
-// Process any bindings accessed through ko.bindingProvider by wrapping the getBindings function
-var oldGetBindings = ko.bindingProvider.instance.getBindings;
-ko.bindingProvider.instance.getBindings = function(node, bindingContext) {
-    return makeKeySubkeyBindingHandlers(oldGetBindings.call(this, node, bindingContext));
-};
-
-// Process any bindings accessed through string-based templates by wrapping the applyBindingsToNode function
-var oldApplyToNode = ko.applyBindingsToNode,
-    koApplyToNodeName = findPropertyName(ko, oldApplyToNode);
-ko.applyBindingsToNode = ko[koApplyToNodeName] = function(node, bindings, viewModel) {
-    oldApplyToNode(node, makeKeySubkeyBindingHandlers(bindings), viewModel);
-};
+    // Process any bindings accessed through string-based templates by wrapping the applyBindingsToNode function
+    var oldApplyToNode = ko.applyBindingsToNode,
+        koApplyToNodeName = findPropertyName(ko, oldApplyToNode);
+    ko.applyBindingsToNode = ko[koApplyToNodeName] = function(node, bindings, viewModel) {
+        oldApplyToNode(node, makeKeySubkeyBindingHandlers(bindings), viewModel);
+    };
+}
 
 // You can use ko.getBindingHandler to manually create key.subkey bindings
 var oldGetHandler = ko.getBindingHandler || function(bindingKey) { return ko.bindingHandlers[bindingKey] };

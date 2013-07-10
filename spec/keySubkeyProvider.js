@@ -107,7 +107,7 @@ describe('key.subkey bindings', {
     },
 
     'Should not run updates for all x.y bindings if only one needs to run if knockout-freedom is included': function() {
-        if (ko.bindingFreedom) {
+        if (ko.bindingFreedom || ko.version[0] >= 3) {
             var observable = ko.observable('A'), updateCounts = [0,0,0];
             ko.bindingHandlers.test = {
                 update: function(element, valueAccessor) {
