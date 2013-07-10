@@ -1,7 +1,7 @@
 // KEY.SUBKEY BINDING plugin for Knockout http://knockoutjs.com/
 // (c) Michael Best
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
-// Version 0.1.0
+// Version 0.1.1
 
 (function(ko, undefined) {
 
@@ -24,7 +24,6 @@ function makeKeySubkeyBindingHandler(bindingKey) {
             var subKey = match[2],
                 makeSubHandler = baseHandler.makeSubkeyHandler || makeDefaultKeySubkeyHandler,
                 subHandler = makeSubHandler.call(baseHandler, baseKey, subKey, bindingKey);
-            ko.virtualElements.allowedBindings[bindingKey] = ko.virtualElements.allowedBindings[baseKey];
             ko.bindingHandlers[bindingKey] = subHandler;
             if (ko.bindingFreedom && !ko.bindingFreedom.isExcluded(baseKey))
                 ko.bindingFreedom.include(bindingKey);
@@ -35,7 +34,7 @@ function makeKeySubkeyBindingHandler(bindingKey) {
 
 // Create a binding handler that translates a binding of "binding: value" to
 // "basekey: {subkey: value}". Compatible with these default bindings: event, attr, css, style.
-function makeDefaultKeySubkeyHandler(baseKey, subKey) {
+function makeDefaultKeySubkeyHandler(baseKey, subKey, bindingKey) {
     var subHandler = ko.utils.extend({}, this);
     function setHandlerFunction(funcName) {
         if (subHandler[funcName]) {
@@ -53,6 +52,8 @@ function makeDefaultKeySubkeyHandler(baseKey, subKey) {
     }
     setHandlerFunction('init');
     setHandlerFunction('update');
+    if (ko.virtualElements.allowedBindings[baseKey])
+        ko.virtualElements.allowedBindings[bindingKey] = true;
     return subHandler;
 }
 
