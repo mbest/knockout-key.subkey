@@ -50,8 +50,12 @@ function makeDefaultKeySubkeyHandler(baseKey, subKey, bindingKey) {
             };
         }
     }
+    // Set new init and update functions that wrap the originals
     setHandlerFunction('init');
     setHandlerFunction('update');
+    // Clear any preprocess function since precossing of the new binding would need to be different
+    if (subHandler.preprocess)
+        subHandler.preprocess = null;
     if (ko.virtualElements.allowedBindings[baseKey])
         ko.virtualElements.allowedBindings[bindingKey] = true;
     return subHandler;
